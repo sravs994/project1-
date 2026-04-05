@@ -15,5 +15,17 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t java-app:v1 .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                sh 'docker run java-app:v1'
+            }
+        }
+
     }
 }
