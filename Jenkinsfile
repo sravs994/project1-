@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "java-app"
         TAG = "v4"
+	MINIKUBE_HOME = "/var/lib/jenkins/.minikube"
     }
 
     stages {
@@ -28,7 +29,7 @@ pipeline {
 
         stage('Load Image to Minikube') {
             steps {
-                sh 'minikube image load $IMAGE_NAME:$TAG'
+                sh 'MINIKUBE_HOME=/var/lib/jenkins/.minikube minikube image load $IMAGE_NAME:$TAG'
             }
         }
 
