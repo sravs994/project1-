@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "java-app"
+        TAG = "v4"
+    }
+
     stages {
 
         stage('Checkout Code') {
@@ -9,7 +14,7 @@ pipeline {
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build JAR') {
             steps {
                 sh 'mvn clean package'
             }
@@ -17,13 +22,22 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t java-app:v1 .'
+                sh 'docker build -t $IMAGE_NAME:$TAG .'
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Load Image to Minikube') {
             steps {
-                sh 'docker run java-app:v1'
+                sh 'minikube image load $IMAGE_NAME:$TAG'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh '''
+                kubectl set image deployment/java-app-deployment \
+                java-app-container=$IMAGE_NAME:$TAG
+                '''
             }
         }
 
